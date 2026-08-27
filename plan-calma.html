@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Plan de calma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0F1A1C;
+    --surface: #16262A;
+    --surface-2: #1D2F32;
+    --sage: #7FB8A4;
+    --amber: #E8A468;
+    --text: #F2EDE4;
+    --text-muted: #9AAEA9;
+    --danger: #C97B6A;
+    --radius: 18px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    background: radial-gradient(120% 100% at 50% 0%, #142326 0%, #0F1A1C 55%, #0B1315 100%);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display:flex;
+    flex-direction:column;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .app{
+    max-width: 480px;
+    margin: 0 auto;
+    width: 100%;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+  }
+  header{
+    padding: 28px 24px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  header .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing: 0.14em;
+    text-transform:uppercase;
+    color: var(--sage);
+  }
+  header h1{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size: 26px;
+    letter-spacing: -0.01em;
+  }
+  main{
+    flex:1;
+    padding: 8px 20px 100px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  .view{ display:none; flex-direction:column; gap:16px; }
+  .view.active{ display:flex; }
+
+  /* ---- Home / Plan intro ---- */
+  .hero{
+    background: linear-gradient(160deg, var(--surface) 0%, var(--surface-2) 100%);
+    border-radius: var(--radius);
+    padding: 28px 22px;
+    position:relative;
+    overflow:hidden;
+    border: 1px solid rgba(127,184,164,0.12);
+  }
+  .hero .ring{
+    position:absolute;
+    right:-40px; top:-40px;
+    width:150px; height:150px;
+    border-radius:50%;
+    border: 1px solid rgba(232,164,104,0.18);
+  }
+  .hero .ring::after{
+    content:'';
+    position:absolute; inset: 18px;
+    border-radius:50%;
+    border: 1px solid rgba(127,184,164,0.22);
+  }
+  .hero p.lead{
+    font-family:'Fraunces', serif;
+    font-size: 19px;
+    line-height:1.4;
+    max-width: 260px;
+    color: var(--text);
+  }
+  .hero p.sub{
+    margin-top:10px;
+    font-size:13.5px;
+    color: var(--text-muted);
+    max-width: 260px;
+    line-height:1.5;
+  }
+  .btn-primary{
+    margin-top:20px;
+    background: var(--sage);
+    color: #0F1A1C;
+    border:none;
+    font-family:'Inter', sans-serif;
+    font-weight:700;
+    font-size:15px;
+    padding: 14px 22px;
+    border-radius: 999px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
+  }
+  .btn-primary:active{ transform: scale(0.98); }
+
+  .quicklinks{ display:flex; gap:10px; }
+  .quicklink{
+    flex:1;
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 14px;
+    padding: 14px;
+    text-align:left;
+    color: var(--text);
+    font-family:'Inter', sans-serif;
+    cursor:pointer;
+  }
+  .quicklink .k{
+    font-family:'JetBrains Mono', monospace;
+    font-size:10.5px;
+    color: var(--amber);
+    letter-spacing:0.08em;
+  }
+  .quicklink .v{
+    margin-top:6px;
+    font-size:13.5px;
+    font-weight:600;
+  }
+
+  /* ---- Step flow ---- */
+  .step-card{
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 26px 22px 22px;
+    border: 1px solid rgba(255,255,255,0.05);
+    min-height: 360px;
+    display:flex;
+    flex-direction:column;
+  }
+  .step-progress{
+    display:flex;
+    gap:6px;
+    margin-bottom:18px;
+  }
+  .step-progress span{
+    height:3px;
+    flex:1;
+    border-radius:2px;
+    background: rgba(255,255,255,0.08);
+  }
+  .step-progress span.done{ background: var(--sage); }
+  .step-num{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    color: var(--text-muted);
+    letter-spacing:0.1em;
+  }
+  .step-title{
+    font-family:'Fraunces', serif;
+    font-size:22px;
+    font-weight:500;
+    margin-top:8px;
+    line-height:1.3;
+  }
+  .step-body{
+    margin-top:12px;
+    font-size:14.5px;
+    line-height:1.6;
+    color: var(--text-muted);
+    flex:1;
+  }
+  .step-body b{ color: var(--text); font-weight:600; }
+
+  .breathe-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding: 18px 0 6px;
+  }
+  .breathe-circle{
+    width: 130px; height:130px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, rgba(127,184,164,0.55), rgba(127,184,164,0.15));
+    border: 1px solid rgba(127,184,164,0.4);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size:14px;
+    color: var(--text);
+    transition: transform 4s ease-in-out;
+    transform: scale(0.72);
+  }
+  .breathe-circle.in{ transform: scale(1); transition: transform 4s ease-in-out; }
+  .breathe-circle.hold{ transform: scale(1); transition: transform 0s; }
+  .breathe-circle.out{ transform: scale(0.72); transition: transform 6s ease-in-out; }
+  .breathe-label{
+    margin-top:14px;
+    font-size:12.5px;
+    color: var(--text-muted);
+    text-align:center;
+  }
+
+  .step-nav{
+    display:flex;
+    gap:10px;
+    margin-top:18px;
+  }
+  .btn-ghost{
+    flex:1;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--text-muted);
+    padding: 13px;
+    border-radius: 999px;
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .btn-next{
+    flex:2;
+    background: var(--amber);
+    color: #21140a;
+    border:none;
+    padding:13px;
+    border-radius:999px;
+    font-family:'Inter', sans-serif;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+  }
+
+  /* ---- Registro ---- */
+  .card{
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .card h2{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:18px;
+    margin-bottom: 4px;
+  }
+  .card .hint{ font-size:12.5px; color:var(--text-muted); margin-bottom:16px; }
+  .field{ margin-bottom:16px; }
+  .field label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:8px;
+    color: var(--text);
+  }
+  .pill-group{ display:flex; gap:8px; }
+  .pill{
+    flex:1;
+    padding:10px;
+    text-align:center;
+    border-radius:12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: var(--surface-2);
+    color: var(--text-muted);
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .pill.selected{
+    background: rgba(127,184,164,0.18);
+    border-color: var(--sage);
+    color: var(--text);
+  }
+  textarea, input[type=text]{
+    width:100%;
+    background: var(--surface-2);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius:12px;
+    padding:12px;
+    color: var(--text);
+    font-family:'Inter', sans-serif;
+    font-size:14px;
+    resize:none;
+  }
+  textarea{ min-height:64px; }
+  .btn-save{
+    width:100%;
+    background: var(--sage);
+    color:#0F1A1C;
+    border:none;
+    padding:14px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:14.5px;
+    cursor:pointer;
+  }
+  .entries{ display:flex; flex-direction:column; gap:10px; }
+  .entry{
+    background: var(--surface);
+    border-radius:14px;
+    padding:14px 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .entry .row1{ display:flex; justify-content:space-between; align-items:center; }
+  .entry .date{ font-family:'JetBrains Mono', monospace; font-size:11px; color: var(--text-muted); }
+  .entry .tag{
+    font-size:11px;
+    font-weight:700;
+    padding:2px 9px;
+    border-radius:999px;
+  }
+  .entry .tag.si{ background: rgba(232,164,104,0.18); color: var(--amber); }
+  .entry .tag.no{ background: rgba(127,184,164,0.18); color: var(--sage); }
+  .entry .detail{ margin-top:8px; font-size:13px; color: var(--text-muted); line-height:1.5; }
+  .entry .detail b{ color: var(--text); font-weight:600; }
+  .empty{
+    text-align:center;
+    padding: 30px 10px;
+    color: var(--text-muted);
+    font-size:13.5px;
+  }
+
+  /* ---- Tab bar ---- */
+  nav.tabbar{
+    position: fixed;
+    bottom:0; left:0; right:0;
+    background: rgba(15,26,28,0.92);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display:flex;
+    justify-content:center;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  }
+  nav.tabbar .inner{
+    max-width: 480px;
+    width:100%;
+    display:flex;
+    gap:8px;
+  }
+  .tab{
+    flex:1;
+    background:none;
+    border:none;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    padding:6px;
+    color: var(--text-muted);
+    font-family:'Inter', sans-serif;
+    font-size:11px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .tab.active{ color: var(--sage); }
+  .tab svg{ width:20px; height:20px; }
+
+  ::selection{ background: rgba(127,184,164,0.35); }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="eyebrow" id="today"></div>
+    <h1 id="pageTitle">Plan de calma</h1>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section class="view active" id="view-home">
+      <div class="hero">
+        <div class="ring"></div>
+        <p class="lead">Cuando notes el pico, para antes de actuar.</p>
+        <p class="sub">Cinco pasos breves para bajar la activación antes de escribir, llamar o buscar algo.</p>
+        <button class="btn-primary" onclick="startPlan()">Empezar el plan →</button>
+      </div>
+      <div class="quicklinks">
+        <button class="quicklink" onclick="goTo('view-registro')">
+          <div class="k">HOY</div>
+          <div class="v">Registro diario</div>
+        </button>
+        <button class="quicklink" onclick="goTo('view-historial')">
+          <div class="k">últimos días</div>
+          <div class="v">Ver historial</div>
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP FLOW -->
+    <section class="view" id="view-steps">
+      <div class="step-card">
+        <div class="step-progress" id="stepProgress"></div>
+        <div class="step-num" id="stepNum">PASO 1 DE 5</div>
+        <div class="step-title" id="stepTitle"></div>
+        <div class="step-body" id="stepBody"></div>
+        <div class="step-nav">
+          <button class="btn-ghost" onclick="exitPlan()">Salir</button>
+          <button class="btn-next" id="nextBtn" onclick="nextStep()">Siguiente</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- REGISTRO FORM -->
+    <section class="view" id="view-registro">
+      <div class="card">
+        <h2>Registro de hoy</h2>
+        <div class="hint" id="regDate"></div>
+
+        <div class="field">
+          <label>¿Sentí ansiedad de este tipo hoy?</label>
+          <div class="pill-group" id="pill-ansiedad">
+            <div class="pill" data-val="Sí">Sí</div>
+            <div class="pill" data-val="No">No</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>¿Qué lo disparó?</label>
+          <input type="text" id="disparador" placeholder="silencio, tardanza, mención del ex, nada concreto...">
+        </div>
+
+        <div class="field">
+          <label>¿Cómo estaba yo antes de eso?</label>
+          <input type="text" id="estadoPrevio" placeholder="cansado, quemado del trabajo, bien...">
+        </div>
+
+        <div class="field">
+          <label>¿Qué hice?</label>
+          <div class="pill-group" id="pill-accion">
+            <div class="pill" data-val="Esperé">Esperé</div>
+            <div class="pill" data-val="Pregunté">Pregunté</div>
+            <div class="pill" data-val="Actué por impulso">Actué por impulso</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Notas (opcional)</label>
+          <textarea id="notas" placeholder="algo más que quieras anotar..."></textarea>
+        </div>
+
+        <button class="btn-save" onclick="saveEntry()">Guardar registro</button>
+      </div>
+    </section>
+
+    <!-- HISTORIAL -->
+    <section class="view" id="view-historial">
+      <div class="entries" id="entriesList"></div>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <div class="inner">
+      <button class="tab active" data-tab="view-home" onclick="goTo('view-home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+        Inicio
+      </button>
+      <button class="tab" data-tab="view-registro" onclick="goTo('view-registro')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg>
+        Registro
+      </button>
+      <button class="tab" data-tab="view-historial" onclick="goTo('view-historial')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        Historial
+      </button>
+    </div>
+  </nav>
+</div>
+
+<script>
+const STORAGE_PREFIX = 'registro:';
+
+const steps = [
+  {
+    title: 'Detente antes de actuar',
+    body: 'No mandes mensaje, no llames, no busques información todavía. Date <b>10 minutos</b> antes de hacer nada.',
+    breathe: false
+  },
+  {
+    title: 'Respiración 4–4–6',
+    body: 'Inhala 4 segundos, mantén 4, exhala 6. Repite 5–6 veces. Baja la activación física real: los nervios, el dolor de cabeza.',
+    breathe: true
+  },
+  {
+    title: 'Nómbralo',
+    body: 'Dilo mentalmente o en voz baja: <b>"esto es la herida antigua, no algo que esté pasando ahora."</b>',
+    breathe: false
+  },
+  {
+    title: '¿Hay un dato real?',
+    body: '¿Tengo algún dato real de que algo va mal, o es solo la sensación? Si no hay dato real, sigue al siguiente paso.',
+    breathe: false
+  },
+  {
+    title: 'Corta el bucle',
+    body: 'Haz algo físico breve: levántate, camina, sal al balcón, bebe agua. El cuerpo necesita moverse para soltar la activación.',
+    breathe: false
+  }
+];
+
+let currentStep = 0;
+let breatheTimer = null;
+
+function fmtDate(d){
+  return d.toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'long' });
+}
+
+function initHeader(){
+  document.getElementById('today').textContent = fmtDate(new Date());
+}
+
+function goTo(viewId){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(viewId).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  const tab = document.querySelector(`.tab[data-tab="${viewId}"]`);
+  if(tab) tab.classList.add('active');
+
+  const titles = {
+    'view-home': 'Plan de calma',
+    'view-steps': 'Plan de calma',
+    'view-registro': 'Registro diario',
+    'view-historial': 'Historial'
+  };
+  document.getElementById('pageTitle').textContent = titles[viewId] || 'Plan de calma';
+
+  if(viewId === 'view-registro'){
+    document.getElementById('regDate').textContent = fmtDate(new Date());
+  }
+  if(viewId === 'view-historial'){
+    loadEntries();
+  }
+  if(viewId !== 'view-steps' && breatheTimer){
+    clearInterval(breatheTimer);
+    breatheTimer = null;
+  }
+}
+
+function startPlan(){
+  currentStep = 0;
+  goTo('view-steps');
+  renderStep();
+}
+
+function exitPlan(){
+  if(breatheTimer){ clearInterval(breatheTimer); breatheTimer = null; }
+  goTo('view-home');
+}
+
+function renderStep(){
+  const s = steps[currentStep];
+  document.getElementById('stepNum').textContent = `PASO ${currentStep+1} DE ${steps.length}`;
+  document.getElementById('stepTitle').textContent = s.title;
+
+  let bodyHtml = `<p>${s.body}</p>`;
+  if(s.breathe){
+    bodyHtml += `
+      <div class="breathe-wrap">
+        <div class="breathe-circle" id="breatheCircle">inhala</div>
+        <div class="breathe-label" id="breatheLabel">Sigue el ritmo del círculo</div>
+      </div>`;
+  }
+  document.getElementById('stepBody').innerHTML = bodyHtml;
+
+  const prog = document.getElementById('stepProgress');
+  prog.innerHTML = '';
+  steps.forEach((_, i)=>{
+    const span = document.createElement('span');
+    if(i <= currentStep) span.classList.add('done');
+    prog.appendChild(span);
+  });
+
+  document.getElementById('nextBtn').textContent = (currentStep === steps.length - 1) ? 'Terminar' : 'Siguiente';
+
+  if(breatheTimer){ clearInterval(breatheTimer); breatheTimer = null; }
+  if(s.breathe){
+    runBreatheCycle();
+  }
+}
+
+function runBreatheCycle(){
+  const circle = document.getElementById('breatheCircle');
+  const label = document.getElementById('breatheLabel');
+  if(!circle) return;
+  let phase = 0; // 0 in, 1 hold, 2 out
+  const phases = [
+    {cls:'in', text:'inhala', label:'Inhala, 4 segundos', dur:4000},
+    {cls:'hold', text:'mantén', label:'Mantén, 4 segundos', dur:4000},
+    {cls:'out', text:'exhala', label:'Exhala, 6 segundos', dur:6000}
+  ];
+  function step(){
+    const p = phases[phase];
+    circle.className = 'breathe-circle ' + p.cls;
+    circle.textContent = p.text;
+    label.textContent = p.label;
+    phase = (phase + 1) % phases.length;
+    breatheTimer = setTimeout(step, p.dur);
+  }
+  step();
+}
+
+function nextStep(){
+  if(currentStep === steps.length - 1){
+    exitPlan();
+    return;
+  }
+  currentStep++;
+  renderStep();
+}
+
+// ---- Registro ----
+document.querySelectorAll('#pill-ansiedad .pill').forEach(p=>{
+  p.addEventListener('click', ()=>{
+    document.querySelectorAll('#pill-ansiedad .pill').forEach(x=>x.classList.remove('selected'));
+    p.classList.add('selected');
+  });
+});
+document.querySelectorAll('#pill-accion .pill').forEach(p=>{
+  p.addEventListener('click', ()=>{
+    document.querySelectorAll('#pill-accion .pill').forEach(x=>x.classList.remove('selected'));
+    p.classList.add('selected');
+  });
+});
+
+async function saveEntry(){
+  const ansiedadEl = document.querySelector('#pill-ansiedad .pill.selected');
+  const accionEl = document.querySelector('#pill-accion .pill.selected');
+  const entry = {
+    date: new Date().toISOString(),
+    ansiedad: ansiedadEl ? ansiedadEl.dataset.val : null,
+    disparador: document.getElementById('disparador').value.trim(),
+    estadoPrevio: document.getElementById('estadoPrevio').value.trim(),
+    accion: accionEl ? accionEl.dataset.val : null,
+    notas: document.getElementById('notas').value.trim()
+  };
+  const key = STORAGE_PREFIX + Date.now();
+  try{
+    const res = await window.storage.set(key, JSON.stringify(entry), false);
+    if(!res){
+      alert('No se pudo guardar. Inténtalo de nuevo.');
+      return;
+    }
+    document.querySelectorAll('.pill').forEach(p=>p.classList.remove('selected'));
+    document.getElementById('disparador').value = '';
+    document.getElementById('estadoPrevio').value = '';
+    document.getElementById('notas').value = '';
+    goTo('view-historial');
+  }catch(e){
+    console.error('Error guardando registro', e);
+    alert('No se pudo guardar. Inténtalo de nuevo.');
+  }
+}
+
+async function loadEntries(){
+  const list = document.getElementById('entriesList');
+  list.innerHTML = '<div class="empty">Cargando...</div>';
+  try{
+    const listing = await window.storage.list(STORAGE_PREFIX, false);
+    if(!listing || !listing.keys || listing.keys.length === 0){
+      list.innerHTML = '<div class="empty">Todavía no hay registros. Cuando anotes uno, aparecerá aquí.</div>';
+      return;
+    }
+    const keys = listing.keys.sort().reverse().slice(0, 30);
+    const entries = [];
+    for(const k of keys){
+      try{
+        const r = await window.storage.get(k, false);
+        if(r && r.value) entries.push(JSON.parse(r.value));
+      }catch(e){ /* skip missing */ }
+    }
+    if(entries.length === 0){
+      list.innerHTML = '<div class="empty">Todavía no hay registros. Cuando anotes uno, aparecerá aquí.</div>';
+      return;
+    }
+    list.innerHTML = '';
+    entries.forEach(e=>{
+      const d = new Date(e.date);
+      const dateStr = d.toLocaleDateString('es-ES', { day:'2-digit', month:'short' }) + ' · ' + d.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+      const div = document.createElement('div');
+      div.className = 'entry';
+      const tagClass = e.ansiedad === 'Sí' ? 'si' : 'no';
+      div.innerHTML = `
+        <div class="row1">
+          <span class="date">${dateStr}</span>
+          <span class="tag ${tagClass}">${e.ansiedad || '—'}</span>
+        </div>
+        <div class="detail">
+          ${e.disparador ? `<b>Disparador:</b> ${escapeHtml(e.disparador)}<br>` : ''}
+          ${e.estadoPrevio ? `<b>Estado previo:</b> ${escapeHtml(e.estadoPrevio)}<br>` : ''}
+          ${e.accion ? `<b>Hice:</b> ${escapeHtml(e.accion)}<br>` : ''}
+          ${e.notas ? `<b>Notas:</b> ${escapeHtml(e.notas)}` : ''}
+        </div>`;
+      list.appendChild(div);
+    });
+  }catch(e){
+    console.error('Error cargando historial', e);
+    list.innerHTML = '<div class="empty">No se pudo cargar el historial.</div>';
+  }
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+initHeader();
+</script>
+</body>
+</html>
