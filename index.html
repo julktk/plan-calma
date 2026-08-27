@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0F1A1C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Plan de calma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0F1A1C;
+    --surface: #16262A;
+    --surface-2: #1D2F32;
+    --sage: #7FB8A4;
+    --amber: #E8A468;
+    --text: #F2EDE4;
+    --text-muted: #9AAEA9;
+    --radius: 18px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    background: radial-gradient(120% 100% at 50% 0%, #142326 0%, #0F1A1C 55%, #0B1315 100%);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh;
+    display:flex;
+    flex-direction:column;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .app{max-width:480px; margin:0 auto; width:100%; flex:1; display:flex; flex-direction:column; min-height:100vh;}
+  header{padding: calc(28px + env(safe-area-inset-top)) 24px 16px; display:flex; flex-direction:column; gap:4px;}
+  header .eyebrow{font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--sage);}
+  header h1{font-family:'Fraunces', Georgia, serif; font-weight:500; font-size:26px; letter-spacing:-0.01em;}
+  main{flex:1; padding: 8px 20px 110px; display:flex; flex-direction:column; gap:16px;}
+  .view{display:none; flex-direction:column; gap:16px;}
+  .view.active{display:flex;}
+
+  .hero{background: linear-gradient(160deg, var(--surface) 0%, var(--surface-2) 100%); border-radius:var(--radius); padding:28px 22px; position:relative; overflow:hidden; border:1px solid rgba(127,184,164,0.12);}
+  .hero .ring{position:absolute; right:-40px; top:-40px; width:150px; height:150px; border-radius:50%; border:1px solid rgba(232,164,104,0.18);}
+  .hero .ring::after{content:''; position:absolute; inset:18px; border-radius:50%; border:1px solid rgba(127,184,164,0.22);}
+  .hero p.lead{font-family:'Fraunces', Georgia, serif; font-size:19px; line-height:1.4; max-width:260px;}
+  .hero p.sub{margin-top:10px; font-size:13.5px; color:var(--text-muted); max-width:260px; line-height:1.5;}
+  .btn-primary{margin-top:20px; background:var(--sage); color:#0F1A1C; border:none; font-weight:700; font-size:15px; padding:14px 22px; border-radius:999px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-family:'Inter',sans-serif;}
+  .btn-primary:active{transform:scale(0.98);}
+
+  .quicklinks{display:flex; gap:10px;}
+  .quicklink{flex:1; background:var(--surface); border:1px solid rgba(255,255,255,0.05); border-radius:14px; padding:14px; text-align:left; color:var(--text); font-family:'Inter',sans-serif; cursor:pointer;}
+  .quicklink .k{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--amber); letter-spacing:0.08em;}
+  .quicklink .v{margin-top:6px; font-size:13.5px; font-weight:600;}
+
+  .step-card{background:var(--surface); border-radius:var(--radius); padding:26px 22px 22px; border:1px solid rgba(255,255,255,0.05); min-height:380px; display:flex; flex-direction:column;}
+  .step-progress{display:flex; gap:6px; margin-bottom:18px;}
+  .step-progress span{height:3px; flex:1; border-radius:2px; background:rgba(255,255,255,0.08);}
+  .step-progress span.done{background:var(--sage);}
+  .step-num{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-muted); letter-spacing:0.1em;}
+  .step-title{font-family:'Fraunces',Georgia,serif; font-size:22px; font-weight:500; margin-top:8px; line-height:1.3;}
+  .step-body{margin-top:12px; font-size:14.5px; line-height:1.6; color:var(--text-muted); flex:1;}
+  .step-body b{color:var(--text); font-weight:600;}
+
+  .breathe-wrap{display:flex; flex-direction:column; align-items:center; justify-content:center; padding:18px 0 6px;}
+  .breathe-circle{width:130px; height:130px; border-radius:50%; background: radial-gradient(circle at 35% 30%, rgba(127,184,164,0.55), rgba(127,184,164,0.15)); border:1px solid rgba(127,184,164,0.4); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--text); transform:scale(0.72);}
+  .breathe-circle.in{transform:scale(1); transition: transform 4s ease-in-out;}
+  .breathe-circle.hold{transform:scale(1); transition:none;}
+  .breathe-circle.out{transform:scale(0.72); transition: transform 6s ease-in-out;}
+  .breathe-label{margin-top:14px; font-size:12.5px; color:var(--text-muted); text-align:center;}
+  @media (prefers-reduced-motion: reduce){
+    .breathe-circle, .breathe-circle.in, .breathe-circle.out{transition:none;}
+  }
+
+  .step-nav{display:flex; gap:10px; margin-top:18px;}
+  .btn-ghost{flex:1; background:transparent; border:1px solid rgba(255,255,255,0.12); color:var(--text-muted); padding:13px; border-radius:999px; font-weight:600; font-size:14px; cursor:pointer; font-family:'Inter',sans-serif;}
+  .btn-next{flex:2; background:var(--amber); color:#21140a; border:none; padding:13px; border-radius:999px; font-weight:700; font-size:14px; cursor:pointer; font-family:'Inter',sans-serif;}
+
+  .card{background:var(--surface); border-radius:var(--radius); padding:20px; border:1px solid rgba(255,255,255,0.05);}
+  .card h2{font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:18px; margin-bottom:4px;}
+  .card .hint{font-size:12.5px; color:var(--text-muted); margin-bottom:16px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-size:13px; font-weight:600; margin-bottom:8px;}
+  .pill-group{display:flex; gap:8px;}
+  .pill{flex:1; padding:10px; text-align:center; border-radius:12px; border:1px solid rgba(255,255,255,0.1); background:var(--surface-2); color:var(--text-muted); font-size:13.5px; font-weight:600; cursor:pointer;}
+  .pill.selected{background:rgba(127,184,164,0.18); border-color:var(--sage); color:var(--text);}
+  textarea, input[type=text]{width:100%; background:var(--surface-2); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:12px; color:var(--text); font-family:'Inter',sans-serif; font-size:14px; resize:none;}
+  textarea{min-height:64px;}
+  .btn-save{width:100%; background:var(--sage); color:#0F1A1C; border:none; padding:14px; border-radius:999px; font-weight:700; font-size:14.5px; cursor:pointer; font-family:'Inter',sans-serif;}
+
+  .hist-head{display:flex; justify-content:space-between; align-items:center; gap:10px;}
+  .btn-export{background:transparent; border:1px solid var(--amber); color:var(--amber); padding:9px 16px; border-radius:999px; font-weight:600; font-size:12.5px; cursor:pointer; font-family:'Inter',sans-serif; white-space:nowrap;}
+  .btn-import{background:transparent; border:1px solid rgba(127,184,164,0.5); color:var(--sage); padding:9px 16px; border-radius:999px; font-weight:600; font-size:12.5px; cursor:pointer; font-family:'Inter',sans-serif; white-space:nowrap;}
+  .hist-count{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-muted); letter-spacing:0.08em;}
+  .entries{display:flex; flex-direction:column; gap:10px;}
+  .entry{background:var(--surface); border-radius:14px; padding:14px 16px; border:1px solid rgba(255,255,255,0.05);}
+  .entry .row1{display:flex; justify-content:space-between; align-items:center;}
+  .entry .date{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-muted);}
+  .entry .tag{font-size:11px; font-weight:700; padding:2px 9px; border-radius:999px;}
+  .entry .tag.si{background:rgba(232,164,104,0.18); color:var(--amber);}
+  .entry .tag.no{background:rgba(127,184,164,0.18); color:var(--sage);}
+  .entry .detail{margin-top:8px; font-size:13px; color:var(--text-muted); line-height:1.5;}
+  .entry .detail b{color:var(--text); font-weight:600;}
+  .entry .actions{display:flex; gap:8px; margin-top:12px;}
+  .entry .actions button{background:transparent; border:1px solid rgba(255,255,255,0.12); color:var(--text-muted); padding:7px 14px; border-radius:999px; font-size:12px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif;}
+  .entry .actions button.edit{border-color:rgba(127,184,164,0.45); color:var(--sage);}
+  .entry .actions button.del{border-color:rgba(201,123,106,0.45); color:#C97B6A;}
+  .edit-banner{background:rgba(232,164,104,0.14); border:1px solid rgba(232,164,104,0.35); border-radius:12px; padding:10px 14px; margin-bottom:16px; font-size:12.5px; color:var(--amber); display:flex; justify-content:space-between; align-items:center; gap:10px;}
+  .edit-banner button{background:transparent; border:none; color:var(--amber); font-size:12.5px; font-weight:700; cursor:pointer; text-decoration:underline; font-family:'Inter',sans-serif;}
+  .empty{text-align:center; padding:30px 10px; color:var(--text-muted); font-size:13.5px; line-height:1.6;}
+
+  nav.tabbar{position:fixed; bottom:0; left:0; right:0; background:rgba(15,26,28,0.94); backdrop-filter:blur(10px); border-top:1px solid rgba(255,255,255,0.06); display:flex; justify-content:center; padding:10px 16px calc(10px + env(safe-area-inset-bottom));}
+  nav.tabbar .inner{max-width:480px; width:100%; display:flex; gap:8px;}
+  .tab{flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:4px; padding:6px; color:var(--text-muted); font-family:'Inter',sans-serif; font-size:11px; font-weight:600; cursor:pointer;}
+  .tab.active{color:var(--sage);}
+  .tab svg{width:20px; height:20px;}
+  button:focus-visible, .pill:focus-visible{outline:2px solid var(--amber); outline-offset:2px;}
+  ::selection{background:rgba(127,184,164,0.35);}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="eyebrow" id="today"></div>
+    <h1 id="pageTitle">Plan de calma</h1>
+  </header>
+
+  <main>
+    <section class="view active" id="view-home">
+      <div class="hero">
+        <div class="ring"></div>
+        <p class="lead">Cuando notes el pico, para antes de actuar.</p>
+        <p class="sub">Cinco pasos breves para bajar la activación antes de escribir, llamar o buscar algo.</p>
+        <button class="btn-primary" onclick="startPlan()">Empezar el plan →</button>
+      </div>
+      <div class="quicklinks">
+        <button class="quicklink" onclick="goTo('view-registro')">
+          <div class="k">HOY</div><div class="v">Registro diario</div>
+        </button>
+        <button class="quicklink" onclick="goTo('view-historial')">
+          <div class="k">ÚLTIMOS DÍAS</div><div class="v">Ver historial</div>
+        </button>
+      </div>
+    </section>
+
+    <section class="view" id="view-steps">
+      <div class="step-card">
+        <div class="step-progress" id="stepProgress"></div>
+        <div class="step-num" id="stepNum"></div>
+        <div class="step-title" id="stepTitle"></div>
+        <div class="step-body" id="stepBody"></div>
+        <div class="step-nav">
+          <button class="btn-ghost" onclick="exitPlan()">Salir</button>
+          <button class="btn-next" id="nextBtn" onclick="nextStep()">Siguiente</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-registro">
+      <div class="card">
+        <h2 id="regHeading">Registro de hoy</h2>
+        <div class="hint" id="regDate"></div>
+        <div class="edit-banner" id="editBanner" style="display:none;">
+          <span id="editBannerText">Editando un registro anterior</span>
+          <button onclick="cancelEdit()">Cancelar</button>
+        </div>
+        <div class="field">
+          <label>¿Sentí ansiedad de este tipo hoy?</label>
+          <div class="pill-group" id="pill-ansiedad">
+            <div class="pill" data-val="Sí" tabindex="0">Sí</div>
+            <div class="pill" data-val="No" tabindex="0">No</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>¿Qué lo disparó?</label>
+          <input type="text" id="disparador" placeholder="silencio, tardanza, mención del ex, nada concreto...">
+        </div>
+        <div class="field">
+          <label>¿Cómo estaba yo antes de eso?</label>
+          <input type="text" id="estadoPrevio" placeholder="cansado, quemado del trabajo, bien...">
+        </div>
+        <div class="field">
+          <label>¿Qué hice?</label>
+          <div class="pill-group" id="pill-accion">
+            <div class="pill" data-val="Esperé" tabindex="0">Esperé</div>
+            <div class="pill" data-val="Pregunté" tabindex="0">Pregunté</div>
+            <div class="pill" data-val="Actué por impulso" tabindex="0">Impulso</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Notas (opcional)</label>
+          <textarea id="notas" placeholder="algo más que quieras anotar..."></textarea>
+        </div>
+        <button class="btn-save" id="saveBtn" onclick="saveEntry()">Guardar registro</button>
+      </div>
+    </section>
+
+    <section class="view" id="view-historial">
+      <div class="hist-head">
+        <span class="hist-count" id="histCount"></span>
+        <button class="btn-export" onclick="exportCSV()">Exportar</button>
+        <button class="btn-import" onclick="document.getElementById('csvInput').click()">Importar</button>
+        <input type="file" id="csvInput" accept=".csv,text/csv" style="display:none" onchange="importCSV(event)">
+      </div>
+      <div class="entries" id="entriesList"></div>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <div class="inner">
+      <button class="tab active" data-tab="view-home" onclick="goTo('view-home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Inicio
+      </button>
+      <button class="tab" data-tab="view-registro" onclick="goTo('view-registro')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg>Registro
+      </button>
+      <button class="tab" data-tab="view-historial" onclick="goTo('view-historial')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Historial
+      </button>
+    </div>
+  </nav>
+</div>
+
+<script>
+const STORAGE_KEY = 'plan-calma-registros';
+
+const steps = [
+  {title:'Detente antes de actuar', body:'No mandes mensaje, no llames, no busques información todavía. Date <b>10 minutos</b> antes de hacer nada.', breathe:false},
+  {title:'Respiración 4–4–6', body:'Inhala 4 segundos, mantén 4, exhala 6. Repite 5–6 veces. Baja la activación física real: los nervios, el dolor de cabeza.', breathe:true},
+  {title:'Nómbralo', body:'Dilo mentalmente o en voz baja: <b>"esto es la herida antigua, no algo que esté pasando ahora."</b>', breathe:false},
+  {title:'¿Hay un dato real?', body:'¿Tengo algún dato real de que algo va mal, o es solo la sensación? Si no hay dato real, sigue al siguiente paso.', breathe:false},
+  {title:'Corta el bucle', body:'Haz algo físico breve: levántate, camina, sal al balcón, bebe agua. El cuerpo necesita moverse para soltar la activación.', breathe:false}
+];
+
+let currentStep = 0;
+let breatheTimer = null;
+
+function fmtDate(d){ return d.toLocaleDateString('es-ES',{weekday:'long', day:'numeric', month:'long'}); }
+function initHeader(){ document.getElementById('today').textContent = fmtDate(new Date()); }
+
+function goTo(viewId){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(viewId).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  const tab = document.querySelector('.tab[data-tab="'+viewId+'"]');
+  if(tab) tab.classList.add('active');
+  const titles = {'view-home':'Plan de calma','view-steps':'Plan de calma','view-registro':'Registro diario','view-historial':'Historial'};
+  document.getElementById('pageTitle').textContent = titles[viewId] || 'Plan de calma';
+  if(viewId==='view-registro'){
+    document.getElementById('regDate').textContent = fmtDate(new Date());
+    if(!enteringEdit && editingId){ clearForm(); setFormMode(null); }
+  }
+  if(viewId==='view-historial') loadEntries();
+  if(viewId!=='view-steps' && breatheTimer){ clearTimeout(breatheTimer); breatheTimer=null; }
+  window.scrollTo(0,0);
+}
+
+function startPlan(){ currentStep=0; goTo('view-steps'); renderStep(); }
+function exitPlan(){ if(breatheTimer){clearTimeout(breatheTimer); breatheTimer=null;} goTo('view-home'); }
+
+function renderStep(){
+  const s = steps[currentStep];
+  document.getElementById('stepNum').textContent = 'PASO '+(currentStep+1)+' DE '+steps.length;
+  document.getElementById('stepTitle').textContent = s.title;
+  let html = '<p>'+s.body+'</p>';
+  if(s.breathe){
+    html += '<div class="breathe-wrap"><div class="breathe-circle" id="breatheCircle">inhala</div><div class="breathe-label" id="breatheLabel">Sigue el ritmo del círculo</div></div>';
+  }
+  document.getElementById('stepBody').innerHTML = html;
+  const prog = document.getElementById('stepProgress');
+  prog.innerHTML='';
+  steps.forEach((_,i)=>{ const sp=document.createElement('span'); if(i<=currentStep) sp.classList.add('done'); prog.appendChild(sp); });
+  document.getElementById('nextBtn').textContent = (currentStep===steps.length-1)?'Terminar':'Siguiente';
+  if(breatheTimer){ clearTimeout(breatheTimer); breatheTimer=null; }
+  if(s.breathe) runBreatheCycle();
+}
+
+function runBreatheCycle(){
+  const circle = document.getElementById('breatheCircle');
+  const label = document.getElementById('breatheLabel');
+  if(!circle) return;
+  let phase = 0;
+  const phases = [
+    {cls:'in', text:'inhala', label:'Inhala, 4 segundos', dur:4000},
+    {cls:'hold', text:'mantén', label:'Mantén, 4 segundos', dur:4000},
+    {cls:'out', text:'exhala', label:'Exhala, 6 segundos', dur:6000}
+  ];
+  function tick(){
+    const p = phases[phase];
+    circle.className = 'breathe-circle '+p.cls;
+    circle.textContent = p.text;
+    label.textContent = p.label;
+    phase = (phase+1)%phases.length;
+    breatheTimer = setTimeout(tick, p.dur);
+  }
+  tick();
+}
+
+function nextStep(){
+  if(currentStep===steps.length-1){ exitPlan(); return; }
+  currentStep++;
+  renderStep();
+}
+
+document.querySelectorAll('#pill-ansiedad .pill, #pill-accion .pill').forEach(p=>{
+  const handler = ()=>{
+    p.parentElement.querySelectorAll('.pill').forEach(x=>x.classList.remove('selected'));
+    p.classList.add('selected');
+  };
+  p.addEventListener('click', handler);
+  p.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); handler(); }});
+});
+
+let editingId = null;
+let enteringEdit = false;
+
+function readAll(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const all = raw ? JSON.parse(raw) : [];
+    let changed = false;
+    all.forEach((e,i)=>{
+      if(!e.id){ e.id = 'r'+new Date(e.date).getTime()+'-'+i; changed = true; }
+    });
+    if(changed){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(all)); }catch(err){} }
+    return all;
+  }catch(e){ console.error(e); return []; }
+}
+
+function writeAll(all){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    return true;
+  }catch(e){
+    alert('No se pudo guardar en este navegador.');
+    return false;
+  }
+}
+
+function clearForm(){
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('selected'));
+  document.getElementById('disparador').value='';
+  document.getElementById('estadoPrevio').value='';
+  document.getElementById('notas').value='';
+}
+
+function setFormMode(entry){
+  const banner = document.getElementById('editBanner');
+  const heading = document.getElementById('regHeading');
+  const saveBtn = document.getElementById('saveBtn');
+  if(entry){
+    editingId = entry.id;
+    const d = new Date(entry.date);
+    heading.textContent = 'Editar registro';
+    document.getElementById('editBannerText').textContent =
+      'Editando el registro del ' + d.toLocaleDateString('es-ES',{day:'numeric', month:'long'}) +
+      ' a las ' + d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+    banner.style.display = 'flex';
+    saveBtn.textContent = 'Guardar cambios';
+  }else{
+    editingId = null;
+    heading.textContent = 'Registro de hoy';
+    banner.style.display = 'none';
+    saveBtn.textContent = 'Guardar registro';
+  }
+}
+
+function editEntry(id){
+  const all = readAll();
+  const entry = all.find(e=>e.id===id);
+  if(!entry) return;
+  clearForm();
+  document.getElementById('disparador').value = entry.disparador || '';
+  document.getElementById('estadoPrevio').value = entry.estadoPrevio || '';
+  document.getElementById('notas').value = entry.notas || '';
+  document.querySelectorAll('#pill-ansiedad .pill').forEach(p=>{ if(p.dataset.val===entry.ansiedad) p.classList.add('selected'); });
+  document.querySelectorAll('#pill-accion .pill').forEach(p=>{ if(p.dataset.val===entry.accion) p.classList.add('selected'); });
+  enteringEdit = true;
+  goTo('view-registro');
+  enteringEdit = false;
+  setFormMode(entry);
+}
+
+function cancelEdit(){
+  clearForm();
+  setFormMode(null);
+  goTo('view-historial');
+}
+
+function deleteEntry(id){
+  if(!confirm('¿Borrar este registro? No se puede deshacer.')) return;
+  const all = readAll().filter(e=>e.id!==id);
+  if(writeAll(all)){
+    if(editingId===id){ clearForm(); setFormMode(null); }
+    loadEntries();
+  }
+}
+
+function saveEntry(){
+  const a = document.querySelector('#pill-ansiedad .pill.selected');
+  const ac = document.querySelector('#pill-accion .pill.selected');
+  const data = {
+    ansiedad: a ? a.dataset.val : '',
+    disparador: document.getElementById('disparador').value.trim(),
+    estadoPrevio: document.getElementById('estadoPrevio').value.trim(),
+    accion: ac ? ac.dataset.val : '',
+    notas: document.getElementById('notas').value.trim()
+  };
+  const all = readAll();
+  if(editingId){
+    const idx = all.findIndex(e=>e.id===editingId);
+    if(idx === -1){ alert('No se encontró el registro.'); return; }
+    all[idx] = Object.assign({}, all[idx], data, { editado: new Date().toISOString() });
+  }else{
+    all.push(Object.assign({
+      id: 'r'+Date.now(),
+      date: new Date().toISOString()
+    }, data));
+  }
+  if(!writeAll(all)) return;
+  clearForm();
+  setFormMode(null);
+  goTo('view-historial');
+}
+
+function loadEntries(){
+  const list = document.getElementById('entriesList');
+  const count = document.getElementById('histCount');
+  const all = readAll().slice().reverse();
+  count.textContent = all.length ? all.length+' REGISTRO'+(all.length===1?'':'S') : '';
+  if(all.length===0){
+    list.innerHTML = '<div class="empty">Todavía no hay registros.<br>Cuando anotes uno, aparecerá aquí.</div>';
+    return;
+  }
+  list.innerHTML='';
+  all.forEach(e=>{
+    const d = new Date(e.date);
+    const dateStr = d.toLocaleDateString('es-ES',{day:'2-digit',month:'short'})+' · '+d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+    const div = document.createElement('div');
+    div.className='entry';
+    const tagClass = e.ansiedad==='Sí' ? 'si' : 'no';
+    div.innerHTML =
+      '<div class="row1"><span class="date">'+dateStr+'</span><span class="tag '+tagClass+'">'+(e.ansiedad||'—')+'</span></div>'+
+      '<div class="detail">'+
+      (e.disparador?'<b>Disparador:</b> '+esc(e.disparador)+'<br>':'')+
+      (e.estadoPrevio?'<b>Estado previo:</b> '+esc(e.estadoPrevio)+'<br>':'')+
+      (e.accion?'<b>Hice:</b> '+esc(e.accion)+'<br>':'')+
+      (e.notas?'<b>Notas:</b> '+esc(e.notas):'')+
+      (e.editado?'<br><span style="opacity:0.6;font-size:11.5px;">editado</span>':'')+
+      '</div>'+
+      '<div class="actions">'+
+        '<button class="edit" data-id="'+esc(e.id)+'" data-act="edit">Editar</button>'+
+        '<button class="del" data-id="'+esc(e.id)+'" data-act="del">Borrar</button>'+
+      '</div>';
+    div.querySelector('[data-act="edit"]').addEventListener('click', ()=>editEntry(e.id));
+    div.querySelector('[data-act="del"]').addEventListener('click', ()=>deleteEntry(e.id));
+    list.appendChild(div);
+  });
+}
+
+function esc(str){ const d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
+
+function csvCell(v){
+  const s = (v==null?'':String(v));
+  return '"'+s.replace(/"/g,'""')+'"';
+}
+
+function parseCSV(text){
+  if(text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  const rows = [];
+  let row = [], cell = '', inQ = false;
+  for(let i=0; i<text.length; i++){
+    const c = text[i];
+    if(inQ){
+      if(c === '"'){
+        if(text[i+1] === '"'){ cell += '"'; i++; }
+        else inQ = false;
+      } else cell += c;
+    } else {
+      if(c === '"') inQ = true;
+      else if(c === ';' || c === ','){ row.push(cell); cell = ''; }
+      else if(c === '\n'){ row.push(cell); rows.push(row); row = []; cell = ''; }
+      else if(c === '\r'){ /* skip */ }
+      else cell += c;
+    }
+  }
+  if(cell.length || row.length){ row.push(cell); rows.push(row); }
+  return rows.filter(r => r.some(x => x.trim() !== ''));
+}
+
+function parseFechaHora(fecha, hora){
+  const fm = (fecha||'').match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+  const hm = (hora||'').match(/(\d{1,2}):(\d{2})/);
+  if(!fm) return new Date();
+  const d = new Date(
+    parseInt(fm[3],10), parseInt(fm[2],10)-1, parseInt(fm[1],10),
+    hm ? parseInt(hm[1],10) : 12, hm ? parseInt(hm[2],10) : 0
+  );
+  return isNaN(d.getTime()) ? new Date() : d;
+}
+
+function importCSV(ev){
+  const file = ev.target.files && ev.target.files[0];
+  ev.target.value = '';
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(){
+    try{
+      const rows = parseCSV(String(reader.result));
+      if(rows.length < 2){ alert('El archivo no contiene registros.'); return; }
+      const body = rows.slice(1);
+      const all = readAll();
+      const existing = new Set(all.map(e => new Date(e.date).getTime()));
+      let added = 0, skipped = 0;
+      body.forEach((r, i) => {
+        const d = parseFechaHora(r[0], r[1]);
+        const t = d.getTime();
+        if(existing.has(t)){ skipped++; return; }
+        existing.add(t);
+        all.push({
+          id: 'i' + t + '-' + i,
+          date: d.toISOString(),
+          ansiedad: (r[2]||'').trim(),
+          disparador: (r[3]||'').trim(),
+          estadoPrevio: (r[4]||'').trim(),
+          accion: (r[5]||'').trim(),
+          notas: (r[6]||'').trim()
+        });
+        added++;
+      });
+      all.sort((a,b) => new Date(a.date) - new Date(b.date));
+      if(!writeAll(all)) return;
+      loadEntries();
+      alert(added + ' registro' + (added===1?'':'s') + ' importado' + (added===1?'':'s') +
+            (skipped ? '. ' + skipped + ' ya existían y se han omitido.' : '.'));
+    }catch(e){
+      console.error(e);
+      alert('No se pudo leer el archivo. Asegúrate de que es un CSV exportado desde esta app.');
+    }
+  };
+  reader.onerror = function(){ alert('No se pudo leer el archivo.'); };
+  reader.readAsText(file, 'utf-8');
+}
+
+function exportCSV(){
+  const all = readAll();
+  if(all.length===0){ alert('Todavía no hay registros que exportar.'); return; }
+  const header = ['Fecha','Hora','Ansiedad','Disparador','Estado previo','Qué hice','Notas'];
+  const rows = all.map(e=>{
+    const d = new Date(e.date);
+    return [
+      d.toLocaleDateString('es-ES'),
+      d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}),
+      e.ansiedad, e.disparador, e.estadoPrevio, e.accion, e.notas
+    ].map(csvCell).join(';');
+  });
+  const csv = '\uFEFF' + header.map(csvCell).join(';') + '\n' + rows.join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = 'registro-ansiedad-'+stamp+'.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+
+// --- Manifest e icono embebidos (sin archivos externos) ---
+const iconSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#0F1A1C"/><circle cx="256" cy="256" r="130" fill="none" stroke="#7FB8A4" stroke-width="14"/><circle cx="256" cy="256" r="80" fill="none" stroke="#E8A468" stroke-width="10"/><circle cx="256" cy="256" r="34" fill="#7FB8A4"/></svg>';
+const iconUrl = 'data:image/svg+xml;base64,' + btoa(iconSvg);
+const linkIcon = document.createElement('link');
+linkIcon.rel = 'icon'; linkIcon.type = 'image/svg+xml'; linkIcon.href = iconUrl;
+document.head.appendChild(linkIcon);
+const appleIcon = document.createElement('link');
+appleIcon.rel = 'apple-touch-icon'; appleIcon.href = iconUrl;
+document.head.appendChild(appleIcon);
+
+const manifest = {
+  name: 'Plan de calma',
+  short_name: 'Calma',
+  start_url: '.',
+  display: 'standalone',
+  background_color: '#0F1A1C',
+  theme_color: '#0F1A1C',
+  icons: [{ src: iconUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }]
+};
+const manifestLink = document.createElement('link');
+manifestLink.rel = 'manifest';
+manifestLink.href = 'data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(manifest))));
+document.head.appendChild(manifestLink);
+
+initHeader();
+</script>
+</body>
+</html>
